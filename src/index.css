@@ -1,9 +1,9 @@
 @import "tailwindcss";
 
-@import "tailwindcss";
+
 
 @theme {
-  --font-sans: "Plus Jakarta Sans", ,"helvetica", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Plus Jakarta Sans","helvetica", ui-sans-serif, system-ui, sans-serif;
 
   --color-orange: #ff9e20;
   --color-orange-dark: #d87800;

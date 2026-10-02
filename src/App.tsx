@@ -1,8 +1,11 @@
+import {SessionProvider} from "./context/SessionContext"
+import {AppRoutes} from "./routes";
+
 const App = () => {
   return (
-    <div>
-      <h1>Hello Word</h1>
-    </div>
+    <SessionProvider>
+      <AppRoutes />
+    </SessionProvider>
   );
 };
 
