@@ -1,9 +1,9 @@
 import type { InputHTMLAttributes } from 'react';
 import { Icon } from './Icon';
 
-interface InputProps extends InputHTMLAttributes<HTMLInputElement> { label?: string; icon?: string; error?: string; }
+interface InputProps extends InputHTMLAttributes<HTMLInputElement> { label?: string; icon?: string; error?: string; filled?: boolean; }
 
-export const Input = ({ label, icon, error, id, className = '', ...rest }: InputProps ) => {
+export const Input = ({ label, icon, error, filled = false, id, className = '', ...rest }: InputProps ) => {
   const inputId = id ?? rest.name;
   return (
     <div className={className}>
@@ -13,7 +13,7 @@ export const Input = ({ label, icon, error, id, className = '', ...rest }: Input
         <input
           id={inputId}
           aria-invalid={!!error}
-          className={`h-10 w-full rounded-lg border bg-white pr-3 text-sm placeholder:text-charcoal-muted focus:outline-2 focus:outline-teal ${icon ? 'pl-10' : 'pl-3'} ${error ? 'border-danger' : 'border-warm-200'}`}
+          className={`h-10 w-full rounded-lg border ${filled ? 'bg-warm-100' : 'bg-white'} pr-3 text-sm placeholder:text-charcoal-muted focus:outline-2 focus:outline-teal ${icon ? 'pl-10' : 'pl-3'} ${error ? 'border-danger' : 'border-warm-200'}`}
           {...rest}
         />
       </div>
