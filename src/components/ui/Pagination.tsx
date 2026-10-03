@@ -1,7 +1,7 @@
 import type { Pagination as PaginationMeta } from '../../types/api';
 import { Icon } from './Icon';
 
-interface PaginationProps { pagination: PaginationMeta; onPageChange: (page: number) => void; }
+interface PaginationProps { pagination: PaginationMeta; onPageChange: (page: number) => void; itemLabel?: string; }
 
 function pageList(current: number, total: number): (number | 'gap')[] {
   if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
@@ -10,8 +10,9 @@ function pageList(current: number, total: number): (number | 'gap')[] {
   return sorted.flatMap((p, i) => (i > 0 && p - sorted[i - 1] > 1 ? ['gap' as const, p] : [p]));
 }
 
-export const Pagination = ({ pagination, onPageChange }: PaginationProps) => {
+export const Pagination = ({ pagination, onPageChange, itemLabel }: PaginationProps) => {
   const { page, page_size, total, total_pages } = pagination;
+  const label = itemLabel ? itemLabel : 'items';
   if (total === 0) return null;
   const from = (page - 1) * page_size + 1;
   const to = Math.min(page * page_size, total);
@@ -19,7 +20,7 @@ export const Pagination = ({ pagination, onPageChange }: PaginationProps) => {
 
   return (
     <nav aria-label="Pagination" className="flex flex-col items-center justify-between gap-3 px-4 py-3 sm:flex-row">
-      <p className="text-xs text-charcoal-muted">Showing {from}–{to} of {total.toLocaleString()}</p>
+      <p className="text-xs text-charcoal-muted">Showing {from}–{to} of {total.toLocaleString()} {label}</p>
       <div className="flex items-center gap-1">
         <button type="button" aria-label="Previous page" className={`${btn} hover:bg-warm-100`} disabled={page <= 1} onClick={() => onPageChange(page - 1)}>
           <Icon name="chevron_left" />

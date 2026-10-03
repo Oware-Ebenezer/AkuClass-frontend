@@ -2,9 +2,9 @@ import type { SelectHTMLAttributes } from 'react';
 import { Icon } from './Icon';
 
 export interface SelectOption { value: string; label: string; }
-interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> { label?: string; options: SelectOption[]; error?: string; }
+interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> { label?: string; options: SelectOption[]; error?: string; filled?: boolean; }
 
-export const Select = ({ label, options, error, id, className = '', ...rest }: SelectProps) => {
+export const Select = ({ label, options, error, filled = false, id, className = '', ...rest }: SelectProps) => {
   const selectId = id ?? rest.name;
   return (
     <div className={className}>
@@ -13,7 +13,7 @@ export const Select = ({ label, options, error, id, className = '', ...rest }: S
         <select
           id={selectId}
           aria-invalid={!!error}
-          className={`h-10 w-full appearance-none rounded-lg border bg-white pr-9 pl-3 text-sm focus:outline-2 focus:outline-teal ${error ? 'border-danger' : 'border-warm-200'}`}
+          className={`h-10 w-full appearance-none rounded-lg border ${filled ? 'bg-warm-100' : 'bg-white'} pr-9 pl-3 text-sm focus:outline-2 focus:outline-teal ${error ? 'border-danger' : 'border-warm-200'}`}
           {...rest}
         >
           {options.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}

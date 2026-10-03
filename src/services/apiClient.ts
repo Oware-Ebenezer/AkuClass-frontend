@@ -1,4 +1,6 @@
-import type { ApiErrorBody, ApiResponse } from '../types/api';
+import type { ApiErrorBody, ApiResponse, PaginatedResponse } from '../types/api';
+
+export const USE_FIXTURES = import.meta.env.VITE_USE_FIXTURES === 'true';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '';
 const TOKEN_KEY = 'akuclass_token';
@@ -39,7 +41,7 @@ export const tokenStore = {
 let onUnauthorized: (() => void) | null = null;
 export const setUnauthorizedHandler = (fn: (() => void) | null) => { onUnauthorized = fn; };
 
-async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
+async function send(path: string, init: RequestInit = {}): Promise<unknown> {
   const token = tokenStore.get();
   let res: Response;
   try {
@@ -59,8 +61,11 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
     }
     throw new ApiError(kindByStatus(res.status), res.status, body?.error?.code, body?.error?.message);
   }
-  if (res.status === 204) return undefined as T;
-  return ((await res.json()) as ApiResponse<T>).data;
+  if (res.status === 204) return undefined;
+  return res.json();
 }
 
-export const apiGet = <T>(path: string) => request<T>(path);
+export const apiGet = async <T>(path: string) => ((await send(path)) as ApiResponse<T>).data;
+export const apiGetPage = async <T>(path: string) => (await send(path)) as PaginatedResponse<T>;
+export const apiPatch = async <T>(path: string, body: unknown) =>
+  ((await send(path, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })) as ApiResponse<T>).data;
