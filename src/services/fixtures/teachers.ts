@@ -1,12 +1,14 @@
 import type { PaginatedResponse } from '../../types/api';
-import type { Subject, Teacher, TeacherListParams } from '../../types/teacher';
+import type { ClassSubject } from '../../types/class';
+import type { Subject, Teacher, TeacherDetail, TeacherListParams } from '../../types/teacher';
+import { ApiError } from '../apiClient';
 import { queryClasses } from './classes';
 
 // Dev-only data. The first 24 teachers are the class teachers from the classes fixture, so
 // both screens agree; level, subjects and classes are derived from their class assignments.
-const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-const JHS_SUBJECTS = ['Mathematics', 'English Language', 'Integrated Science', 'Social Studies', 'ICT', 'Basic Design & Tech (BDT)', 'Ghanaian Language (Twi)', 'French', 'Religious & Moral Education', 'Creative Arts'];
-const SHS_SUBJECTS = ['Core Mathematics', 'English Language', 'Physics', 'Chemistry', 'Biology', 'Economics', 'Government', 'Literature in English', 'Business Management', 'Elective Mathematics'];
+export const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+export const JHS_SUBJECTS = ['Mathematics', 'English Language', 'Integrated Science', 'Social Studies', 'ICT', 'Basic Design & Tech (BDT)', 'Ghanaian Language (Twi)', 'French', 'Religious & Moral Education', 'Creative Arts'];
+export const SHS_SUBJECTS = ['Core Mathematics', 'English Language', 'Physics', 'Chemistry', 'Biology', 'Economics', 'Government', 'Literature in English', 'Business Management', 'Elective Mathematics'];
 export const subjectsFixture: Subject[] = [...new Set([...JHS_SUBJECTS, ...SHS_SUBJECTS])].map((name) => ({ id: slug(name), name }));
 
 const EXTRA = ['Mr. Kwabena Nkrumah', 'Mrs. Rita Opoku', 'Mr. Eric Yeboah', 'Mrs. Gifty Ansah', 'Mr. Michael Adjei', 'Mrs. Patience Larbi',
@@ -51,3 +53,34 @@ export async function queryTeachers(p: TeacherListParams): Promise<PaginatedResp
     pagination: { page: p.page, page_size: p.page_size, total: rows.length, total_pages: Math.max(1, Math.ceil(rows.length / p.page_size)) },
   };
 }
+
+const delay = () => new Promise((r) => setTimeout(r, 200));
+export const allowed = (subject: string, section: 'JHS' | 'SHS') => (section === 'JHS' ? JHS_SUBJECTS : SHS_SUBJECTS).includes(subject);
+
+export async function teacherDetail(id: string): Promise<TeacherDetail> {
+  await delay();
+  const t = (await all()).find((x) => x.id === id);
+  if (!t) throw new ApiError('not_found', 404, 'RESOURCE_NOT_FOUND', 'Teacher was not found.');
+  const classes = (await queryClasses({ page: 1, page_size: 100 })).data;
+  const detailed = t.classes.map((r) => {
+    const c = classes.find((x) => x.id === r.id)!;
+    return { ...r, school_section: c.school_section, student_count: c.student_count };
+  });
+  const assignments = detailed.flatMap((c) => t.subjects.filter((s) => allowed(s, c.school_section)).map((s) => ({
+    id: `${t.id}:${c.id}:${slug(s)}`, subject: { id: slug(s), name: s }, class: { id: c.id, name: c.name },
+    is_class_teacher: c.is_class_teacher, academic_year: '2026/2027',
+  })));
+  return { ...t, classes: detailed, assignments, academic_year: '2026/2027' };
+}
+
+export async function classSubjects(classId: string): Promise<ClassSubject[]> {
+  await delay();
+  const section = classId.startsWith('jhs') ? 'JHS' : 'SHS';
+  return (await all()).filter((t) => t.classes.some((c) => c.id === classId)).flatMap((t) =>
+    t.subjects.filter((s) => allowed(s, section)).map((s) => ({
+      id: `${classId}:${slug(s)}:${t.id}`, subject: { id: slug(s), name: s },
+      teacher: { id: t.id, full_name: t.full_name, employee_number: t.employee_number },
+    })));
+}
+
+export { all as allTeachers };

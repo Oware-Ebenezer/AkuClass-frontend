@@ -3,12 +3,10 @@ import { AccountStatusBadge } from '../../../components/ui/AccountStatusBadge';
 import { Avatar } from '../../../components/ui/Avatar';
 import { Badge } from '../../../components/ui/Badge';
 import { Icon } from '../../../components/ui/Icon';
+import { LevelBadge } from '../../../components/ui/LevelBadge';
 import { Table, type Column } from '../../../components/ui/Table';
-import type { Teacher, TeacherLevel } from '../../../types/teacher';
+import type { Teacher } from '../../../types/teacher';
 
-const levelBadge: Record<TeacherLevel, { tone: 'teal' | 'orange' | 'neutral'; label: string }> = {
-  JHS: { tone: 'teal', label: 'JHS' }, SHS: { tone: 'orange', label: 'SHS' }, BOTH: { tone: 'neutral', label: 'JHS & SHS' },
-};
 const MAX_CLASSES = 3;
 const none = <span className="text-charcoal-muted">—</span>;
 
@@ -27,7 +25,7 @@ const columns: Column<Teacher>[] = [
   },
   { key: 'id', header: 'Employee ID', className: 'whitespace-nowrap', render: (t) => <span className="text-xs font-semibold text-charcoal-lighter">{t.employee_number}</span> },
   { key: 'phone', header: 'Phone', className: 'whitespace-nowrap', render: (t) => t.phone },
-  { key: 'level', header: 'Level', className: 'whitespace-nowrap', render: (t) => <Badge tone={levelBadge[t.level].tone}>{levelBadge[t.level].label}</Badge> },
+  { key: 'level', header: 'Level', className: 'whitespace-nowrap', render: (t) => <LevelBadge level={t.level} /> },
   {
     key: 'subjects', header: 'Assigned Subjects',
     render: (t) => t.subjects.length === 0 ? none : (

@@ -68,4 +68,7 @@ async function send(path: string, init: RequestInit = {}): Promise<unknown> {
 export const apiGet = async <T>(path: string) => ((await send(path)) as ApiResponse<T>).data;
 export const apiGetPage = async <T>(path: string) => (await send(path)) as PaginatedResponse<T>;
 export const apiPatch = async <T>(path: string, body: unknown) =>
-  ((await send(path, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })) as ApiResponse<T>).data;
+  ((await send(path, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })) as ApiResponse<T> | undefined)?.data as T;
+export const apiPost = async <T>(path: string, body: unknown) =>
+  ((await send(path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })) as ApiResponse<T> | undefined)?.data as T;
+export const apiDelete = async (path: string) => { await send(path, { method: 'DELETE' }); };

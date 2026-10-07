@@ -1,7 +1,7 @@
 import type { PaginatedResponse } from '../types/api';
-import type { Teacher, TeacherListParams } from '../types/teacher';
+import type { Teacher, TeacherDetail, TeacherListParams } from '../types/teacher';
 import { toQuery } from '../utils/query';
-import { USE_FIXTURES, apiGetPage } from './apiClient';
+import { USE_FIXTURES, apiGet, apiGetPage } from './apiClient';
 
 export async function listTeachers(params: TeacherListParams): Promise<PaginatedResponse<Teacher>> {
   if (USE_FIXTURES) return (await import('./fixtures/teachers')).queryTeachers(params);
@@ -20,4 +20,9 @@ export async function getTeacherCounts(academicYearId: string): Promise<TeacherC
     count({ status: 'ACTIVE' }), count({ status: 'INACTIVE' }), count({ status: 'SUSPENDED' }),
   ]);
   return { total, jhs, shs, both, active, inactive, suspended };
+}
+
+export async function getTeacher(teacherId: string): Promise<TeacherDetail> {
+  if (USE_FIXTURES) return (await import('./fixtures/teachers')).teacherDetail(teacherId);
+  return apiGet<TeacherDetail>(`/teachers/${encodeURIComponent(teacherId)}`);
 }
