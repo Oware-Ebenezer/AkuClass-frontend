@@ -36,3 +36,20 @@ export function formatClock(hhmm: string): string {
   const [h, m] = hhmm.split(':').map(Number);
   return `${String(h % 12 || 12).padStart(2, '0')}:${String(m).padStart(2, '0')} ${h < 12 ? 'AM' : 'PM'}`;
 }
+
+export const formatTimeOfDay = (iso: string) => new Date(iso).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+
+export const formatDateTime = (iso: string) => `${formatDate(iso, { day: 'numeric', month: 'short' })}, ${formatTimeOfDay(iso)}`;
+
+// "Today" / "Tomorrow" / "in 3 days" / "2 days ago", by calendar day
+export function relativeDay(iso: string): string {
+  const d = new Date(iso);
+  const now = new Date();
+  const diff = Math.round((new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime() - new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime()) / 86_400_000);
+  if (diff === 0) return 'Today';
+  if (diff === 1) return 'Tomorrow';
+  if (diff === -1) return 'Yesterday';
+  return diff > 0 ? `in ${diff} days` : `${-diff} days ago`;
+}
+
+export const formatBytes = (n: number) => (n >= 1_048_576 ? `${(n / 1_048_576).toFixed(1)} MB` : `${Math.max(1, Math.round(n / 1024))} KB`);

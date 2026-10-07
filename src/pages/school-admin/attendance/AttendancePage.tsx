@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { PageContainer } from '../../../components/layout/PageContainer';
 import { Button } from '../../../components/ui/Button';
 import { Card } from '../../../components/ui/Card';
@@ -22,7 +23,8 @@ import { EditRecordModal } from './EditRecordModal';
 const PAGE_SIZE = 12;
 
 export default function AttendancePage() {
-  const [classId, setClassId] = useState('');
+  const [searchParams] = useSearchParams();
+  const [classId, setClassId] = useState(searchParams.get('class_id') ?? '');
   const [date, setDate] = useState(todayIso);
   const [status, setStatus] = useState<AttendanceStatus | ''>('');
   const [search, setSearch] = useState('');
