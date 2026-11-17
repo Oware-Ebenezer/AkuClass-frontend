@@ -14,6 +14,7 @@ import AssignmentsPage from '../pages/school-admin/assignments/AssignmentsPage';
 import AssignmentDetailPage from '../pages/school-admin/assignments/AssignmentDetailPage';
 import ResultsPage from '../pages/school-admin/results/ResultsPage';
 import TimetablePage from '../pages/school-admin/timetable/TimetablePage';
+import AnnouncementsPage from '../pages/school-admin/announcements/AnnouncementsPage';
 
 function NotBuiltYet() {
   return <PageContainer title="Not available yet" description="This screen has not been implemented." />;
@@ -36,6 +37,7 @@ export function AppRoutes() {
         <Route path="results" element={<ResultsPage/>} />
         <Route path="timetable" element={<TimetablePage />} />
         <Route path="teachers" element={<TeachersPage/>} />
+        <Route path="announcements" element={<AnnouncementsPage />} />
         <Route path="teachers/:teacherId" element={<TeacherProfilePage />} />
         <Route path="*" element={<NotBuiltYet />} />
         <Route path="subjects" element={<SubjectsPage/>} />
